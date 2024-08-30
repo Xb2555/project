@@ -31,7 +31,7 @@
         <foreach collection="projectIds" item="projectId" open="(" separator="," close=")">
             #{projectId}
         </foreach>
-            and date_trunc('day', date) = date_trunc('day', current_date - interval '1 days' )
+            and DATE(date) = DATE(NOW() - INTERVAL 1 DAY)
     </insert>
     <select id="getTotalAttackRecord" resultType="int">
         select count(*) from banned_ip
@@ -42,83 +42,83 @@
     </select>
 
     <select id="getTotalUserOperateRecord" resultType="int">
-        select count(*) from "user_operate_log"
+        select count(*) from user_operate_log
     </select>
 
     <select id="getUserOperateLogs" resultType="com.qg24.po.entity.UserOperateLog">
-        select * from "user_operate_log" order by date desc LIMIT #{pageSize} OFFSet #{page}
+        select * from user_operate_log order by date desc LIMIT #{pageSize} OFFSet #{page}
     </select>
 
     <select id="getTotalBackendExceptionLogs" resultType="int">
-        select count(*) from "backend_exception_info" where project_id=#{projectId}
+        select count(*) from backend_exception_info where project_id=#{projectId}
     </select>
 
     <select id="getBackendExceptionInfos" resultType="com.qg24.po.entity.BackendExceptionInfo">
-        select * from "backend_exception_info" where project_id=#{projectId} order by error_time desc LIMIT #{pageSize} OFFSet #{page}
+        select * from backend_exception_info where project_id=#{projectId} order by error_time desc LIMIT #{pageSize} OFFSet #{page}
     </select>
 
     <select id="getFrontExceptionLogsNum" resultType="int">
-        select count(*) from "front_exception_log" where project_id = #{projectId}
+        select count(*) from front_exception_log where project_id = #{projectId}
     </select>
 
     <select id="getFrontExceptionInfos" resultType="com.qg24.po.entity.FrontExceptionLog">
-        select * from "front_exception_log" where project_id=#{projectId} order by log_time desc LIMIT #{pageSize} OFFSet #{page}
+        select * from front_exception_log where project_id=#{projectId} order by log_time desc LIMIT #{pageSize} OFFSet #{page}
     </select>
 
     <select id="getTotalBackendRequestNum" resultType="int">
-        select count(*) from "backend_request_info" where project_id = #{projectId}
+        select count(*) from backend_request_info where project_id = #{projectId}
     </select>
 
     <select id="getBackendRequestInfos" resultType="com.qg24.po.entity.BackendRequestInfo">
-        select * from "backend_request_info" where project_id=#{projectId} order by request_time desc LIMIT #{pageSize} OFFSet #{page}
+        select * from backend_request_info where project_id=#{projectId} order by request_time desc LIMIT #{pageSize} OFFSet #{page}
     </select>
 
     <select id="getTotalFrontPerformanceNum" resultType="int">
-        select count(*) from "front_performance_log" where project_id = #{projectId}
+        select count(*) from front_performance_log where project_id = #{projectId}
     </select>
 
     <select id="getFrontPerformanceLogs" resultType="com.qg24.po.entity.FrontPerformanceLog">
-        select * from "front_performance_log" where project_id=#{projectId} order by log_time desc LIMIT #{pageSize} OFFSet #{page}
+        select * from front_performance_log where project_id=#{projectId} order by log_time desc LIMIT #{pageSize} OFFSet #{page}
     </select>
 
     <select id="getMobilePerformanceNum" resultType="int">
-        select count(*) from "mobile_performance_log" where project_id = #{projectId}
+        select count(*) from mobile_performance_log where project_id = #{projectId}
     </select>
 
     <select id="getMobilePerformanceLogs" resultType="com.qg24.po.entity.MobilePerformanceLog">
-        select * from "mobile_performance_log" where project_id = #{projectId} order by log_time desc LIMIT #{pageSize} OFFSet #{page}
+        select * from mobile_performance_log where project_id = #{projectId} order by log_time desc LIMIT #{pageSize} OFFSet #{page}
     </select>
 
     <select id="getMobileExceptionNum" resultType="int">
-        select count(*) from "mobile_exception_log" where project_id = #{projectId}
+        select count(*) from mobile_exception_log where project_id = #{projectId}
     </select>
 
     <select id="getMobileExceptionLogs" resultType="com.qg24.po.entity.MobileExceptionLog">
-        select * from "mobile_exception_log" where project_id = #{projectId} order by log_time desc LIMIT #{pageSize} OFFSet #{page}
+        select * from mobile_exception_log where project_id = #{projectId} order by log_time desc LIMIT #{pageSize} OFFSet #{page}
     </select>
 
     <select id="getOneWeekData" resultType="com.qg24.po.entity.ProjectPresentationData">
-        select * from "project_presentation_data" where project_id=#{projectId} and date_trunc('day', date) between date_trunc('day', current_date - interval '7 days' )  and date_trunc('day', current_date)  order by date desc LIMIT 7
+        select * from project_presentation_data where project_id=#{projectId} and DATE(date) BETWEEN DATE(NOW() - INTERVAL 7 DAY) AND DATE(NOW())  order by date desc LIMIT 7
     </select>
 
     <select id="getProjectOperateLogs" resultType="com.qg24.po.entity.ProjectOperateLog">
-        select * from "project_operate_log" where project_id = #{projectId} order by date desc
+        select * from project_operate_log where project_id = #{projectId} order by date desc
     </select>
 
     <update id="updateVisits" >
-        update "project_presentation_data"
+        update project_presentation_data
         set visits = #{visits},
             total_visits = #{totalVisits}
-        where project_id = #{projectId} and date_trunc('day',date) = date_trunc('day',current_date)
+        where project_id = #{projectId} and DATE(date) = DATE(NOW())
     </update>
 
 
     <select id="getTotalBackendLogInfo" resultType="int">
-        select count(*) from "backend_log_info" where project_id = #{projectId}
+        select count(*) from backend_log_info where project_id = #{projectId}
     </select>
 
     <select id="getBackendLogInfos" resultType="com.qg24.po.entity.BackendLogInfo">
-        select * from "backend_log_info" where project_id = #{projectId} order by log_time desc LIMIT #{pageSize} OFFSet #{page}
+        select * from backend_log_info where project_id = #{projectId} order by log_time desc LIMIT #{pageSize} OFFSet #{page}
     </select>
     <select id="selectBackendExceptionInfoByLogId" resultType="com.qg24.po.entity.BackendExceptionInfo">
         select * from backend_exception_info where backend_exception_info_id = #{logId}
@@ -143,99 +143,83 @@
     </select>
     <select id="selectBackendExceptionInfoCountByProjectId"
             resultType="com.qg24.po.vo.ShowLogNumberOneWeekForGroupVO">
-        select count(*) as total, date_trunc('day', error_time) as date
-        from backend_exception_info
-        where project_id = #{projectId}
-          and date_trunc('day', error_time)
-            between date_trunc('day', current_date - interval '7 days')
-            and date_trunc('day', current_date)
-        GROUP BY date_trunc('day', error_time)
-        ORDER BY date_trunc('day', error_time) DESC
-        LIMIT 7
+        SELECT COUNT(*) AS total, DATE(error_time) AS date
+        FROM backend_exception_info
+        WHERE project_id = #{projectId}
+          AND DATE(error_time) BETWEEN DATE(NOW() - INTERVAL 7 DAY) AND DATE(NOW())
+        GROUP BY DATE(error_time)
+        ORDER BY DATE(error_time) DESC
+        LIMIT 7;
     </select>
     <select id="selectBackendRequestInfoCountByProjectId"
             resultType="com.qg24.po.vo.ShowLogNumberOneWeekForGroupVO">
-        select count(*) as total, date_trunc('day', request_time) as date
-        from backend_request_info
-        where project_id = #{projectId}
-          and date_trunc('day', request_time)
-            between date_trunc('day', current_date - interval '7 days')
-            and date_trunc('day', current_date)
-        GROUP BY date_trunc('day', request_time)
-        ORDER BY date_trunc('day', request_time) DESC
-        LIMIT 7
+        SELECT COUNT(*) AS total, DATE(request_time) AS date
+        FROM backend_request_info
+        WHERE project_id = #{projectId}
+          AND DATE(request_time) BETWEEN DATE(NOW() - INTERVAL 7 DAY) AND DATE(NOW())
+        GROUP BY DATE(request_time)
+        ORDER BY DATE(request_time) DESC
+            LIMIT 7;
     </select>
     <select id="selectBackendLogInfoCountByProjectId"
             resultType="com.qg24.po.vo.ShowLogNumberOneWeekForGroupVO">
-        select count(*) as total, date_trunc('day', log_time) as date
-        from backend_log_info
-        where project_id = #{projectId}
-          and date_trunc('day', log_time)
-            between date_trunc('day', current_date - interval '7 days')
-            and date_trunc('day', current_date)
-        GROUP BY date_trunc('day', log_time)
-        ORDER BY date_trunc('day', log_time) DESC
-        LIMIT 7
+        SELECT COUNT(*) AS total, DATE(log_time) AS date
+        FROM backend_log_info
+        WHERE project_id = #{projectId}
+          AND DATE(log_time) BETWEEN DATE(NOW() - INTERVAL 7 DAY) AND DATE(NOW())
+        GROUP BY DATE(log_time)
+        ORDER BY DATE(log_time) DESC
+            LIMIT 7;
     </select>
     <select id="selectFrontExceptionLogCountByProjectId"
             resultType="com.qg24.po.vo.ShowLogNumberOneWeekForGroupVO">
-        select count(*) as total, date_trunc('day', log_time) as date
-        from front_exception_log
-        where project_id = #{projectId}
-          and date_trunc('day', log_time)
-            between date_trunc('day', current_date - interval '7 days')
-            and date_trunc('day', current_date)
-        GROUP BY date_trunc('day', log_time)
-        ORDER BY date_trunc('day', log_time) DESC
-        LIMIT 7
+        SELECT COUNT(*) AS total, DATE(log_time) AS date
+        FROM front_exception_log
+        WHERE project_id = #{projectId}
+          AND DATE(log_time) BETWEEN DATE(NOW() - INTERVAL 7 DAY) AND DATE(NOW())
+        GROUP BY DATE(log_time)
+        ORDER BY DATE(log_time) DESC
+            LIMIT 7;
     </select>
     <select id="selectFrontPerformanceLogCountByProjectId"
             resultType="com.qg24.po.vo.ShowLogNumberOneWeekForGroupVO">
-        select count(*) as total, date_trunc('day', log_time) as date
-        from front_performance_log
-        where project_id = #{projectId}
-          and date_trunc('day', log_time)
-            between date_trunc('day', current_date - interval '7 days')
-            and date_trunc('day', current_date)
-        GROUP BY date_trunc('day', log_time)
-        ORDER BY date_trunc('day', log_time) DESC
-        LIMIT 7
+        SELECT COUNT(*) AS total, DATE(log_time) AS date
+        FROM front_performance_log
+        WHERE project_id = #{projectId}
+          AND DATE(log_time) BETWEEN DATE(NOW() - INTERVAL 7 DAY) AND DATE(NOW())
+        GROUP BY DATE(log_time)
+        ORDER BY DATE(log_time) DESC
+            LIMIT 7;
     </select>
     <select id="selectMobileExceptionLogCountByProjectId"
             resultType="com.qg24.po.vo.ShowLogNumberOneWeekForGroupVO">
-        select count(*) as total, date_trunc('day', log_time) as date
-        from mobile_exception_log
-        where project_id = #{projectId}
-          and date_trunc('day', log_time)
-            between date_trunc('day', current_date - interval '7 days')
-            and date_trunc('day', current_date)
-        GROUP BY date_trunc('day', log_time)
-        ORDER BY date_trunc('day', log_time) DESC
-        LIMIT 7
+        SELECT COUNT(*) AS total, DATE(log_time) AS date
+        FROM mobile_exception_log
+        WHERE project_id = #{projectId}
+          AND DATE(log_time) BETWEEN DATE(NOW() - INTERVAL 7 DAY) AND DATE(NOW())
+        GROUP BY DATE(log_time)
+        ORDER BY DATE(log_time) DESC
+            LIMIT 7;
     </select>
     <select id="selectMobilePerformanceLogCountByProjectId"
             resultType="com.qg24.po.vo.ShowLogNumberOneWeekForGroupVO">
-        select count(*) as total, date_trunc('day', log_time) as date
-        from mobile_performance_log
-        where project_id = #{projectId}
-          and date_trunc('day', log_time)
-            between date_trunc('day', current_date - interval '7 days')
-            and date_trunc('day', current_date)
-        GROUP BY date_trunc('day', log_time)
-        ORDER BY date_trunc('day', log_time) DESC
-        LIMIT 7
+        SELECT COUNT(*) AS total, DATE(log_time) AS date
+        FROM mobile_performance_log
+        WHERE project_id = #{projectId}
+          AND DATE(log_time) BETWEEN DATE(NOW() - INTERVAL 7 DAY) AND DATE(NOW())
+        GROUP BY DATE(log_time)
+        ORDER BY DATE(log_time) DESC
+            LIMIT 7;
     </select>
     <select id="getPresentationData" resultType="com.qg24.po.entity.ProjectPresentationData">
         select * from project_presentation_data where project_id = #{projectId}
     </select>
     <select id="selectFrontPerformanceLogByUserId" resultType="com.qg24.po.entity.FrontPerformanceLog">
-        select *
-        from front_performance_log
-        where project_id = #{projectId}
-          and date_trunc('day', log_time)
-            between date_trunc('day', current_date - interval '7 days')
-            and date_trunc('day', current_date)
-        order by log_time desc
-        LIMIT 7;
+        SELECT *
+        FROM front_performance_log
+        WHERE project_id = #{projectId}
+          AND DATE(log_time) BETWEEN DATE(NOW() - INTERVAL 7 DAY) AND DATE(NOW())
+        ORDER BY log_time DESC
+            LIMIT 7;
     </select>
 </mapper>
