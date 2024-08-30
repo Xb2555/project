@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qg24.dao.ProjectMapper">
+    <select id="selectAllProjectForUser" resultType="Project">
+        select * from "project"
+        <where>
+            COALESCE(freeze_time, NOW()) &lt;= NOW()
+            <if test="projectName != null and projectName != '' ">
+                and (project_name like  #{projectName} or username like #{projectName})
+            </if>
+        </where>
+    </select>
+
+    <select id="pageQueryAllProjectForUser" resultType="Project">
+        select * from "project"
+        <where>
+            COALESCE(freeze_time, NOW()) &lt;= NOW()
+            <if test="projectName != null and projectName != '' ">
+                and (project_name like  #{projectName} or username like #{projectName})
+            </if>
+        </where>
+        limit #{offset},#{pageSize}
+    </select>
+
+    <select id="selectTotalNumberProjectForUser" resultType="int">
+        select count(*) from "project"
+        <where>
+        COALESCE(freeze_time, NOW()) &lt;= NOW()
+        <if test="projectName != null and projectName != '' ">
+            and project_name like #{projectName} or username like #{projectName}
+        </if>
+    </where>
+    </select>
+
+    <insert id="addUserApplicationProject">
+        insert into
+        user_application_project (project_name,description,user_id,project_url,project_password,application_type,status)
+        values(#{projectName},#{description},#{userId},#{projectUrl},#{projectPassword},0,0)
+    </insert>
+
+    <select id="selectProjectByProjectName" resultType="Project">
+        select * from "project" where project_name = #{projcetName}
+    </select>
+    <select id="selectProjectByProjectId" resultType="com.qg24.po.entity.Project">
+        select *
+        from
+            "project"
+                 where project_id = #{projectId}
+    </select>
+
+
+    <insert id="addApplyMonitorProject">
+        insert into
+            "apply_monitor_project"(applicant_id,project_id,master_id,application_status)
+            values(#{userId},#{projectId},#{masterId},'待办')
+    </insert>
+
+
+    <select id="selectMonitorApplicationByProjectIdAndApplicantIdInPending" resultType="com.qg24.po.entity.ApplyMonitorProject">
+        select * from "apply_monitor_project" where applicant_id = #{userId} and project_id = #{projectId} and application_status = '待办'
+    </select>
+    <select id="selectApplicationUpdateProjectByProjectIdInPending"
+            resultType="com.qg24.po.entity.UserApplicationProject">
+        select *
+        from "user_application_project"
+                 where project_id = #{projectId}
+                   and application_type = 1
+                   and status = 0
+    </select>
+
+    <insert id="addUserApplicationUpdateProject">
+        insert into
+            "user_application_project"(user_id,project_id,project_name,project_url,application_type,project_password,description,status)
+            values(#{userId},#{projectId},#{projectName},#{projectUrl},1,#{projectPassword},#{description},0);
+    </insert>
+    <insert id="insertUserMonitorProject">
+        insert into
+            user_monitor_project(user_id, project_id)
+            values (#{applicantId},${projectId})
+    </insert>
+
+    <select id="selectUserMonitorProjectByProjectId" resultType="com.qg24.po.entity.UserMonitorProject">
+            select * from "user_monitor_project" where  project_id = #{projectId}
+    </select>
+
+    <delete id="deleteUserMonitorProjectByProjectIdAndUserId">
+        delete from  "user_monitor_project" where user_id = #{userId} and project_id = #{projectId}
+    </delete>
+    <delete id="deleteProjectByProjectId">
+        delete from "project" where project_id = #{projectId};
+    </delete>
+
+    <select id="selectProjectByProjectIdAndUsername" resultType="com.qg24.po.entity.Project">
+        select * from "project" where project_id = #{projectId} and username = #{username}
+    </select>
+    
+    <select id="selectUserMonitorProjectByProjectIdAndUserId"
+            resultType="com.qg24.po.entity.UserMonitorProject">
+        select * from "user_monitor_project" where project_id = #{projectId} and user_id = #{userId}
+    </select>
+    
+    <update id="updateWarningRate" >
+        update project_presentation_data set warning_rate = #{warningRate} where project_id = #{projectId}
+    </update>
+    
+    <update id="updateErrorRateAndNum">
+        update project_presentation_data set error_number = #{errorNum}, error_rate = #{errorRate} where project_id = #{projectId} and date = (
+            select MAX(date) from project_presentation_data where project_id = #{projectId}
+        )
+    </update>
+    
+    <select id="getProjectData" resultType="com.qg24.po.entity.ProjectPresentationData">
+        select * from project_presentation_data where project_id = #{projectId} and date = (
+            select MAX(date) from project_presentation_data where project_id = #{projectId}
+            )
+    </select>
+    
+    <update id="updateBackendErr" >
+        update project_presentation_data set backend_error_number = #{errorNum} where project_id = #{projectId} and date = (
+            select MAX(date) from project_presentation_data where project_id = #{projectId}
+        )
+    </update>
+    
+    <update id="updateFrontErr">
+        update project_presentation_data set front_error_number = #{errorNum} where project_id = #{projectId} and date = (
+            select MAX(date) from project_presentation_data where project_id = #{projectId}
+        )
+    </update>
+    
+    <update id="updateMobileErr">
+        update project_presentation_data set mobile_error_number = #{errorNum} where project_id = #{projectId} and date = (
+            select MAX(date) from project_presentation_data where project_id = #{projectId}
+        )
+    </update>
+
+    <insert id="insertProjectData" >
+        insert into project_presentation_data (project_id) values (#{projectId})
+    </insert>
+
+    <select id="selectProjectByUserId" resultType="com.qg24.po.entity.Project">
+        select * from project where username = #{userName}
+    </select>
+
+    <select id="getNewProjectData" resultType="com.qg24.po.entity.ProjectPresentationData">
+        select * from project_presentation_data where project_id = #{projectId} and date::date = CURRENT_DATE;
+    </select>
+</mapper>

@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qg24.dao.AdminMapper">
+    <resultMap id="pagedQueryPublishedProjectResultMap" type="com.qg24.po.vo.ProjectDetailedInfoVO">
+        <result property="creator" column="username"/>
+    </resultMap>
+
+    <update id="updateUserApplicationProject">
+        update user_application_project
+        <set>
+            <if test="status != null and status != '' ">status = #{status},</if>
+            <if test="rejectReason != null and rejectReason != '' ">reject_reason = #{rejectReason},</if>
+        </set>
+        where user_application_project_id = #{userApplicationProjectId};
+    </update>
+
+    <update id="updateApplicationProjectId" >
+        update user_application_project
+        <set>
+            project_id = #{projectId}
+        </set>
+        where user_application_project_id = #{userApplicationProjectId}
+    </update>
+
+    <select id="selectUserByUserId" resultType="com.qg24.po.entity.User">
+        select * from "user" where user_id = #{userId}
+    </select>
+
+    <update id="freezeUser">
+        update "user"
+        <set>
+            <if test="deadline != null and deadline != '' ">deadline = #{deadline},</if>
+            enabled = #{enabled}
+        </set>
+        where user_id = #{userId}
+    </update>
+
+
+    <update id="freezeProject">
+        update project
+        <set>
+            <if test="freezeTime != null and freezeTime != '' ">freeze_time = #{freezeTime},</if>
+        </set>
+        where project_id = #{projectId}
+    </update>
+
+    <select id="queryPublishedProjectUnFroze" resultMap="pagedQueryPublishedProjectResultMap">
+        select project_id, project_name, description, username, project_url, create_time from project where COALESCE(freeze_time, NOW()) &lt;= NOW()
+    </select>
+
+    <select id="pagedQueryPublishedProjectUnFroze" resultMap="pagedQueryPublishedProjectResultMap">
+        select project_id, project_name, description, username, project_url, create_time
+            from project
+                <where>
+                    COALESCE(freeze_time, NOW()) &lt;= NOW()
+                    <if test="keyWord != null">and (project_name like concat('%', #{keyWord}, '%') or username like concat('%', #{keyWord}, '%'))</if>
+                </where>
+                    limit #{page}, #{pageSize}
+    </select>
+
+    <select id="totalCountOnPublishedProjectUnFroze" resultType="java.lang.Integer">
+        select count(*)
+        from project
+        <where>
+            COALESCE(freeze_time, NOW()) &lt;= NOW()
+            <if test="keyWord != null">and (project_name like concat('%', #{keyWord}, '%') or username like concat('%', #{keyWord}, '%'))</if>
+        </where>
+    </select>
+
+    <select id="queryPublishedProjectFroze" resultType="com.qg24.po.vo.ProjectDetailedInfoVO">
+        select project_id, project_name, description, username, project_url, create_time from project where (freeze_time) >= NOW()
+    </select>
+
+    <select id="pagedQueryPublishedProjectFroze" resultMap="pagedQueryPublishedProjectResultMap">
+        select project_id, project_name, description, username, project_url, create_time
+            from project
+                where (freeze_time) >= NOW()
+                    limit #{page}, #{pageSize}
+    </select>
+
+    <select id="totalCountOnPublishedProjectFroze" resultType="java.lang.Integer">
+        select count(*) from project where (freeze_time) >= NOW()
+    </select>
+
+    <select id="pagedQueryProjectApplication" resultType="com.qg24.po.entity.UserApplicationProject">
+        select *
+        from user_application_project as uap
+        inner join "user" as u
+        on uap.user_id = u.user_id
+        <where> uap.status = #{status}
+            <if test="keyWord != null">and (project_name like concat('%', #{keyWord}, '%') or u.username like concat('%', #{keyWord}, '%')) </if>
+        </where>limit  #{page},  #{pageSize};
+    </select>
+
+    <select id="selectUserNameByUserId" resultType="java.lang.String">
+        select "user".username from "user" where user_id = #{userId}
+    </select>
+
+    <select id="totalCountOnApplicationProject" resultType="java.lang.Integer">
+        select count(*)
+        from user_application_project as uap
+        inner join "user" as u
+        on uap.user_id = u.user_id
+        <where> uap.status = #{status}
+            <if test="keyWord != null"> and (project_name like concat('%', #{keyWord}, '%') or u.username like concat('%', #{keyWord}, '%'))</if>
+        </where>
+    </select>
+
+    <select id="selectByApplicationId" resultType="com.qg24.po.entity.UserApplicationProject">
+        select * from user_application_project where user_application_project_id = #{userApplicationProjectId}
+    </select>
+
+    <select id="selectProjectIdByProjectName" resultType="java.lang.Integer">
+        select project.project_id from project where project_name = #{projectName}
+    </select>
+
+    <insert id="addProject">
+        insert into project (project_name, description, username, project_url, project_password)
+        values (#{projectName},
+                #{description},
+                #{username},
+                #{projectUrl},
+                #{projectPassword})
+    </insert>
+    <insert id="addUserMonitorProject">
+        insert into user_monitor_project (user_id, project_id) VALUES (#{userId}, #{projectId})
+    </insert>
+    <insert id="insertProjectOperateLog">
+        insert into project_operate_log (project_id, description, operate_type) VALUES (#{projectId},#{description},#{operateType})
+    </insert>
+
+    <update id="updateProject">
+        update project
+        <set>
+            <if test="projectName != null and projectName != '' ">project_name = #{projectName},</if>
+            <if test="description != null and description != '' ">description = #{description},</if>
+            <if test="username != null and username != '' ">username = #{username},</if>
+            <if test="projectUrl != null and projectUrl != '' ">project_url = #{projectUrl},</if>
+            <if test="projectPassword != null and projectPassword != '' ">project_password = #{projectPassword},</if>
+        </set>
+        where project_id = #{projectId}
+    </update>
+
+
+    <select id="allQueryProjectApplication" resultType="com.qg24.po.entity.UserApplicationProject">
+        select * from user_application_project where status =#{status}
+    </select>
+
+</mapper>

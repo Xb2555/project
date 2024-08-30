@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qg24.dao.WarningMessageMapper">
+    <insert id="insertMessage" >
+        insert into warning_message (project_id, flag) VALUES (#{projectId},#{flag});
+    </insert>
+    <update id="checkMessage">
+        update warning_message set flag = #{flag} where project_id = #{projectId};
+    </update>
+    <delete id="deleteMessage">
+        delete from warning_message where project_id = #{projectId}
+    </delete>
+    <select id="selectNewMessageByProjectId" resultType="com.qg24.po.entity.WarningMessage">
+        select * from warning_message where project_id = #{projectId};
+    </select>
+</mapper>

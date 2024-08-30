@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qg24.dao.UserMapper">
+
+
+    <insert id="addUser">
+        insert into "user" (username, password) VALUES (#{username}, #{password})
+    </insert>
+
+    <select id="selectUserByUsername" resultType="com.qg24.po.entity.User">
+        select * from "user" where username = #{username}
+    </select>
+
+    <update id="updateEnabled" >
+        update "user" set enabled = #{enabled} ,deadline = #{deadline} where username = #{username}
+    </update>
+
+
+
+    <select id="selectProjectsByUserId" resultType="com.qg24.po.vo.ShowSelfProjectsVO">
+        select p.project_id, p.project_name, p.description, p.create_time from project p
+        where username = (select "user".username from "user" where user_id = #{userId});
+    </select>
+
+    <select id="pagedSelectProjectsByUserId" resultType="com.qg24.po.vo.ShowSelfProjectsVO">
+        select p.project_id, p.project_name, p.description, p.create_time
+        from project p
+        where username = (select "user".username from "user" where user_id = #{userId})
+        limit #{page}, #{pageSize};
+    </select>
+
+    <select id="selectProjectsByUserIdCount" resultType="java.lang.Integer">
+        select count(*) from project p
+        where username = (select "user".username from "user" where user_id = #{userId});
+    </select>
+
+
+
+    <select id="selectHaveMonitorPermissionProjectsByUserId"
+            resultType="com.qg24.po.entity.Project">
+        select * from project p
+                 where p.project_id in (select project_id from user_monitor_project where user_id = #{userId});
+    </select>
+
+    <select id="pagedSelectHaveMonitorPermissionProjectsByUserId" resultType="com.qg24.po.entity.Project">
+        select * from project p
+        where p.project_id in (select project_id from user_monitor_project where user_id = #{userId})
+        limit #{page}, #{pageSize};
+    </select>
+
+    <select id="selectHaveMonitorPermissionProjectsByUserIdCount" resultType="java.lang.Integer">
+        select count(*) from project p
+        where p.project_id in (select project_id from user_monitor_project where user_id = #{userId});
+    </select>
+
+
+
+    <select id="selectUserApplicationByUserId" resultType="com.qg24.po.vo.MyApplicationOnMonitorProjectTempVO">
+        select p.project_id, p.project_name, p.description, amp.application_status, amp.application_time, amp.master_id from project p
+             inner join apply_monitor_project amp
+                 on amp.project_id = p.project_id
+                    where amp.applicant_id = #{userId};
+    </select>
+
+    <select id="pagedSelectUserApplicationByUserId"
+            resultType="com.qg24.po.vo.MyApplicationOnMonitorProjectTempVO">
+        select p.project_id, p.project_name, p.description, amp.application_status, amp.application_time, amp.master_id from project p
+             inner join apply_monitor_project amp
+                        on amp.project_id = p.project_id
+        where amp.applicant_id = #{userId}
+        limit #{page}, #{pageSize};
+    </select>
+
+    <select id="selectUserApplicationByUserIdCount" resultType="java.lang.Integer">
+        select count(*) from  apply_monitor_project where applicant_id = #{userId};
+    </select>
+
+
+    <select id="selectUsernameByUserId" resultType="java.lang.String">
+        select "user".username from "user" where user_id = #{userId}
+    </select>
+
+    <select id="selectProjectApplicationByUserId" resultType="com.qg24.po.entity.UserApplicationProject">
+        select * from user_application_project where user_id = #{userId}
+    </select>
+
+    <select id="pagedSelectProjectApplicationByUserId" resultType="com.qg24.po.entity.UserApplicationProject">
+        select * from user_application_project where user_id = #{userId}
+        limit #{page}, #{pageSize};
+    </select>
+
+    <select id="selectProjectApplicationByUserIdCount" resultType="java.lang.Integer">
+        select count(*) from user_application_project where user_id = #{userId}
+    </select>
+
+    <select id="selectReceivedMonitorApplicationByUserId"
+            resultType="com.qg24.po.vo.ReceivedMonitorApplicationTempVO">
+        select p.project_id, p.project_name, p.description,amp.apply_monitor_project_id,amp.application_status, amp.application_time, amp.applicant_id from project p
+             inner join "apply_monitor_project" amp
+                on amp.project_id = p.project_id
+        where amp.master_id = #{userId};
+    </select>
+
+    <select id="pagedSelectReceivedMonitorApplicationByUserId"
+            resultType="com.qg24.po.vo.ReceivedMonitorApplicationTempVO">
+        select p.project_id, p.project_name, p.description,amp.apply_monitor_project_id,amp.application_status, amp.application_time, amp.applicant_id
+            from project p
+                inner join "apply_monitor_project" amp
+                   on amp.project_id = p.project_id
+                        where amp.master_id = #{userId}
+        limit #{page}, #{pageSize};
+    </select>
+
+    <select id="selectReceivedMonitorApplicationByUserIdCount" resultType="java.lang.Integer">
+        select count(*) from "apply_monitor_project" where master_id = #{userId};
+    </select>
+
+
+    <select id="selectUserByUserId" resultType="com.qg24.po.entity.User">
+        select * from "user" where user_id = #{userId};
+    </select>
+    <select id="selectAllUsers" resultType="com.qg24.po.entity.User">
+        select * from "user";
+    </select>
+    <select id="selectApplyMonitorProjectByApplicationId" resultType="com.qg24.po.entity.ApplyMonitorProject">
+        select * from apply_monitor_project where apply_monitor_project_id = #{applyMonitorProjectId}
+    </select>
+
+
+    <update id="updateApplyMonitorProject">
+        update apply_monitor_project set application_status = #{applicationStatus},reject_reason = #{rejectReason} where apply_monitor_project_id = #{applyMonitorProjectId}
+    </update>
+</mapper>

@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qg24.dao.SDKMapper">
+    <insert id="batchInsertBackendRequestInfo" parameterType="java.util.List">
+        insert into "backend_request_info" (project_id, request_ip, request_url, request_method, request_controller, request_api, request_time)
+        values
+        <foreach collection="backendRequestInfoDTOList" item="bean" separator=",">
+            (
+            #{bean.projectId},
+            #{bean.requestIp},
+            #{bean.requestUrl},
+            #{bean.requestMethod},
+            #{bean.requestController},
+            #{bean.requestApi},
+            #{bean.requestTime}
+            )
+        </foreach>
+    </insert>
+
+    <insert id="batchInsertBackendExceptionInfo" parameterType="java.util.List">
+        insert into backend_exception_info (project_id, exception, error_time)
+        values
+        <foreach collection="backendExceptionInfoDTOList" item="bean" separator=",">
+            (
+            #{bean.projectId},
+            #{bean.exception},
+            #{bean.errorTime}
+            )
+        </foreach>
+    </insert>
+
+    <insert id="batchInsertFrontPerformanceLog" parameterType="java.util.List">
+        insert into front_performance_log (url, type, data,project_id)
+        values
+        <foreach collection="frontLogDTOList" item="bean" separator=",">
+            (
+            #{bean.url},
+            #{bean.type},
+            #{bean.data},
+            #{bean.projectId}
+            )
+        </foreach>
+    </insert>
+
+    <insert id="batchInsertFrontExceptionLog" parameterType="java.util.List">
+        insert into front_exception_log (url, type, data,project_id)
+        values
+        <foreach collection="frontLogDTOList" item="bean" separator=",">
+            (
+            #{bean.url},
+            #{bean.type},
+            #{bean.data},
+            #{bean.projectId}
+            )
+        </foreach>
+    </insert>
+
+    <insert id="batchInsertMobilePerformanceLog" parameterType="java.util.List">
+        insert into mobile_performance_log (view, project_id, fps, memory)
+        values
+        <foreach collection="mobilePerformanceLogDTOList" item="bean" separator=",">
+            (
+            #{bean.view},
+            #{bean.projectId},
+            #{bean.fps},
+            #{bean.memory}
+            )
+        </foreach>
+    </insert>
+
+    <insert id="batchInsertMobileExceptionLog" parameterType="java.util.List">
+        insert into mobile_exception_log (project_id, data)
+        values
+        <foreach collection="mobileExceptionDTOList" item="bean" separator=",">
+            (
+            #{bean.projectId},
+            #{bean.data}
+            )
+        </foreach>
+    </insert>
+    
+    <insert id="batchInsertBackendLog" parameterType="java.util.List">
+        insert into backend_log_info (project_id, log_content, log_time, log_level)
+        values
+        <foreach collection="backendLogDTOList" item="bean" separator=",">
+            (
+            #{bean.projectId},
+            #{bean.logContent},
+            #{bean.logTime},
+            #{bean.logLevel}
+            )
+        </foreach>
+    </insert>
+</mapper>
