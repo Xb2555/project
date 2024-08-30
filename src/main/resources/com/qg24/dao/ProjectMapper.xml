@@ -3,8 +3,8 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.qg24.dao.ProjectMapper">
-    <select id="selectAllProjectForUser" resultType="Project">
-        select * from "project"
+    <select id="selectAllProjectForUser" resultType="com.qg24.po.entity.Project">
+        select * from project
         <where>
             COALESCE(freeze_time, NOW()) &lt;= NOW()
             <if test="projectName != null and projectName != '' ">
@@ -13,8 +13,8 @@
         </where>
     </select>
 
-    <select id="pageQueryAllProjectForUser" resultType="Project">
-        select * from "project"
+    <select id="pageQueryAllProjectForUser" resultType="com.qg24.po.entity.Project">
+        select * from project
         <where>
             COALESCE(freeze_time, NOW()) &lt;= NOW()
             <if test="projectName != null and projectName != '' ">
@@ -25,7 +25,7 @@
     </select>
 
     <select id="selectTotalNumberProjectForUser" resultType="int">
-        select count(*) from "project"
+        select count(*) from project
         <where>
         COALESCE(freeze_time, NOW()) &lt;= NOW()
         <if test="projectName != null and projectName != '' ">
@@ -40,31 +40,31 @@
         values(#{projectName},#{description},#{userId},#{projectUrl},#{projectPassword},0,0)
     </insert>
 
-    <select id="selectProjectByProjectName" resultType="Project">
-        select * from "project" where project_name = #{projcetName}
+    <select id="selectProjectByProjectName" resultType="com.qg24.po.entity.Project">
+        select * from project where project_name = #{projcetName}
     </select>
     <select id="selectProjectByProjectId" resultType="com.qg24.po.entity.Project">
         select *
         from
-            "project"
+            project
                  where project_id = #{projectId}
     </select>
 
 
     <insert id="addApplyMonitorProject">
         insert into
-            "apply_monitor_project"(applicant_id,project_id,master_id,application_status)
+            apply_monitor_project (applicant_id,project_id,master_id,application_status)
             values(#{userId},#{projectId},#{masterId},'待办')
     </insert>
 
 
     <select id="selectMonitorApplicationByProjectIdAndApplicantIdInPending" resultType="com.qg24.po.entity.ApplyMonitorProject">
-        select * from "apply_monitor_project" where applicant_id = #{userId} and project_id = #{projectId} and application_status = '待办'
+        select * from apply_monitor_project where applicant_id = #{userId} and project_id = #{projectId} and application_status = '待办'
     </select>
     <select id="selectApplicationUpdateProjectByProjectIdInPending"
             resultType="com.qg24.po.entity.UserApplicationProject">
         select *
-        from "user_application_project"
+        from user_application_project
                  where project_id = #{projectId}
                    and application_type = 1
                    and status = 0
@@ -72,33 +72,33 @@
 
     <insert id="addUserApplicationUpdateProject">
         insert into
-            "user_application_project"(user_id,project_id,project_name,project_url,application_type,project_password,description,status)
+            user_application_project (user_id,project_id,project_name,project_url,application_type,project_password,description,status)
             values(#{userId},#{projectId},#{projectName},#{projectUrl},1,#{projectPassword},#{description},0);
     </insert>
     <insert id="insertUserMonitorProject">
         insert into
             user_monitor_project(user_id, project_id)
-            values (#{applicantId},${projectId})
+            values (#{applicantId},#{projectId})
     </insert>
 
     <select id="selectUserMonitorProjectByProjectId" resultType="com.qg24.po.entity.UserMonitorProject">
-            select * from "user_monitor_project" where  project_id = #{projectId}
+            select * from user_monitor_project where  project_id = #{projectId}
     </select>
 
     <delete id="deleteUserMonitorProjectByProjectIdAndUserId">
-        delete from  "user_monitor_project" where user_id = #{userId} and project_id = #{projectId}
+        delete from  user_monitor_project where user_id = #{userId} and project_id = #{projectId}
     </delete>
     <delete id="deleteProjectByProjectId">
-        delete from "project" where project_id = #{projectId};
+        delete from project where project_id = #{projectId};
     </delete>
 
     <select id="selectProjectByProjectIdAndUsername" resultType="com.qg24.po.entity.Project">
-        select * from "project" where project_id = #{projectId} and username = #{username}
+        select * from project where project_id = #{projectId} and username = #{username}
     </select>
     
     <select id="selectUserMonitorProjectByProjectIdAndUserId"
             resultType="com.qg24.po.entity.UserMonitorProject">
-        select * from "user_monitor_project" where project_id = #{projectId} and user_id = #{userId}
+        select * from user_monitor_project where project_id = #{projectId} and user_id = #{userId}
     </select>
     
     <update id="updateWarningRate" >
@@ -144,6 +144,6 @@
     </select>
 
     <select id="getNewProjectData" resultType="com.qg24.po.entity.ProjectPresentationData">
-        select * from project_presentation_data where project_id = #{projectId} and date::date = CURRENT_DATE;
+        select * from project_presentation_data where project_id = #{projectId} and DATE(date) = CURRENT_DATE;
     </select>
 </mapper>
