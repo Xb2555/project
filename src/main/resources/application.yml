@@ -1,2 +1,7 @@
-
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/qg-test
+    password: Il02mayi
+    username: root
+    type: com.alibaba.druid.pool.DruidDataSource
 
