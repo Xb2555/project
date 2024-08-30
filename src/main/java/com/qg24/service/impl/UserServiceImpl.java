@@ -52,7 +52,7 @@ public class UserServiceImpl implements UserService {
             //注册用户
             newUser.setUsername(registerDTO.getUsername());
             newUser.setPassword(encode);
-            int i = userMapper.addUser(newUser); //添加新用户
+            userMapper.addUser(newUser); //添加新用户
 
             //获取令牌
             //获取用户ID
