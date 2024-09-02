@@ -1,8 +1,14 @@
 package com.qg24.controller;
 
+import com.qg24.AIExplain.ExplainLogs;
+import com.qg24.dao.LogMapper;
 import com.qg24.po.dto.ShowDetailedLogDTO;
 import com.qg24.po.dto.ShowLogNumberOneWeekForGroupDTO;
 import com.qg24.po.dto.ViewLogDTO;
+import com.qg24.po.entity.BackendExceptionInfo;
+import com.qg24.po.entity.DSReMessage;
+import com.qg24.po.entity.FrontExceptionLog;
+import com.qg24.po.entity.MobileExceptionLog;
 import com.qg24.po.result.PageBean;
 import com.qg24.po.result.Result;
 import com.qg24.po.vo.*;
@@ -10,6 +16,7 @@ import com.qg24.service.LogService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -17,6 +24,60 @@ import java.util.List;
 public class LogController {
     @Autowired
     private LogService logService;
+
+    @Autowired
+    private LogMapper logMapper;
+
+    /**
+     * 引用ai辅助分析项目异常日志，给出意见
+     * @param groupType
+     * @param projectId
+     * @return
+     */
+
+    @GetMapping("/explainLogs")
+    public Result<String> explainLogs(@RequestParam("groupType") int groupType, @RequestParam("projectId") int projectId){
+        if(groupType==0){
+            //分析后台异常日志
+            List<ViewLogVO> backendExceptionInfos = new ArrayList<>();
+            backendExceptionInfos = logService.selectBackendExceptionLogs(projectId,1,0).getData();
+            if(backendExceptionInfos.isEmpty()){
+                return Result.error("没有数据");
+            }
+            if(backendExceptionInfos.size()>20){
+                backendExceptionInfos.subList(0,21);//截取20个数据
+            }
+            ExplainLogs explainLogs = new ExplainLogs();
+            DSReMessage reMessage = explainLogs.LogsExplain(backendExceptionInfos);
+            return Result.success("success",reMessage.getChoices().get(0).getMessage().getContent());
+        }else if(groupType==1){
+            //分析前端异常日志
+            List<ViewLogVO> frontExceptionLogs = new ArrayList<>();
+            frontExceptionLogs = logService.selectFrontExceptionLogs(projectId,1,0).getData();
+            if(frontExceptionLogs.isEmpty()){
+                return Result.error("没有数据");
+            }
+            if(frontExceptionLogs.size()>20){
+                frontExceptionLogs.subList(0,21);
+            }
+            ExplainLogs explainLogs = new ExplainLogs();
+            DSReMessage reMessage = explainLogs.LogsExplain(frontExceptionLogs);
+            return Result.success("success",reMessage.getChoices().get(0).getMessage().getContent());
+        }else{
+            //分析移动异常日志
+            List<ViewLogVO> mobileExceptionLogs = new ArrayList<>();
+            mobileExceptionLogs = logService.selectMobileExceptionLogs(projectId,1,0).getData();
+            if(mobileExceptionLogs.isEmpty()){
+                return Result.error("没有数据");
+            }
+            if(mobileExceptionLogs.size()>20){
+                mobileExceptionLogs.subList(0,21);
+            }
+            ExplainLogs explainLogs = new ExplainLogs();
+            DSReMessage reMessage = explainLogs.LogsExplain(mobileExceptionLogs);
+            return Result.success("success",reMessage.getChoices().get(0).getMessage().getContent());
+        }
+    }
 
     /**
      * 分页查询攻击服务器记录
