@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit;
  */
 
 public class ExplainLogs {
-    private static String API_KEY = "sk-bffb6d57ca884ed19628e19d57dc6260";
+    private static String API_KEY = "";
     private static final String API_URL = "https://api.deepseek.com/chat/completions";
 
     public DSReMessage LogsExplain(Object logs){
