@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit;
  */
 
 public class ExplainLogs {
-    private static String API_KEY = "";
+    private static String API_KEY = "sk-bffb6d57ca884ed19628e19d57dc6260";
     private static final String API_URL = "https://api.deepseek.com/chat/completions";
 
     public DSReMessage LogsExplain(Object logs){
@@ -30,7 +30,7 @@ public class ExplainLogs {
         //构建请求体
         DeepSeekMessage message = new DeepSeekMessage();
         Message dsMessage = new Message();
-        dsMessage.setContent(logs.toString()+"帮我分析一下这些项目日志，给一些对该项目改进的建议,100字");
+        dsMessage.setContent(logs.toString()+"帮我分析一下这些项目日志，给一些对该项目改进的建议，以异常分析：开头，不要包含这些日志的语句,100字");
         List<Message> messages = new ArrayList<>();
         messages.add(dsMessage);
         message.setMessages(messages);

@@ -42,39 +42,48 @@ public class LogController {
             List<ViewLogVO> backendExceptionInfos = new ArrayList<>();
             backendExceptionInfos = logService.selectBackendExceptionLogs(projectId,1,0).getData();
             if(backendExceptionInfos.isEmpty()){
-                return Result.error("没有数据");
+                return Result.error("没有日志数据，无法进行ai分析");
             }
             if(backendExceptionInfos.size()>20){
-                backendExceptionInfos.subList(0,21);//截取20个数据
+                backendExceptionInfos=backendExceptionInfos.subList(0,21);//截取20个数据
             }
             ExplainLogs explainLogs = new ExplainLogs();
             DSReMessage reMessage = explainLogs.LogsExplain(backendExceptionInfos);
+            if(reMessage==null){
+                return Result.error("无法连接ai，请等待管理员修复");
+            }
             return Result.success("success",reMessage.getChoices().get(0).getMessage().getContent());
         }else if(groupType==1){
             //分析前端异常日志
             List<ViewLogVO> frontExceptionLogs = new ArrayList<>();
             frontExceptionLogs = logService.selectFrontExceptionLogs(projectId,1,0).getData();
             if(frontExceptionLogs.isEmpty()){
-                return Result.error("没有数据");
+                return Result.error("没有日志数据，无法进行ai分析");
             }
             if(frontExceptionLogs.size()>20){
-                frontExceptionLogs.subList(0,21);
+                frontExceptionLogs=frontExceptionLogs.subList(0,21);
             }
             ExplainLogs explainLogs = new ExplainLogs();
             DSReMessage reMessage = explainLogs.LogsExplain(frontExceptionLogs);
+            if(reMessage==null){
+                return Result.error("无法连接ai，请等待管理员修复");
+            }
             return Result.success("success",reMessage.getChoices().get(0).getMessage().getContent());
         }else{
             //分析移动异常日志
             List<ViewLogVO> mobileExceptionLogs = new ArrayList<>();
             mobileExceptionLogs = logService.selectMobileExceptionLogs(projectId,1,0).getData();
             if(mobileExceptionLogs.isEmpty()){
-                return Result.error("没有数据");
+                return Result.error("没有日志数据，无法进行ai分析");
             }
             if(mobileExceptionLogs.size()>20){
-                mobileExceptionLogs.subList(0,21);
+                mobileExceptionLogs=mobileExceptionLogs.subList(0,21);
             }
             ExplainLogs explainLogs = new ExplainLogs();
             DSReMessage reMessage = explainLogs.LogsExplain(mobileExceptionLogs);
+            if(reMessage==null){
+                return Result.error("无法连接ai，请等待管理员修复");
+            }
             return Result.success("success",reMessage.getChoices().get(0).getMessage().getContent());
         }
     }
